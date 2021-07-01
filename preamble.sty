@@ -1,0 +1,320 @@
+% Declare that this style file requires at least LaTeX version 2e.
+\NeedsTeXFormat{LaTeX2e}
+
+% Provide the name of your page, the date it was last updated, and a comment about what it's used for
+\ProvidesPackage{preamble}[2018/09/12 Danny's custom LaTeX style]
+
+%-------Packages---------
+\usepackage{amssymb,amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+% \usepackage{enumitem}
+% \usepackage{cool}
+\usepackage{tikz,tikz-cd}
+\usepackage{extarrows}
+\usepackage{ifthen}
+\usepackage{intcalc}
+% \usepackage[demo]{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usetikzlibrary{matrix,positioning,calc,arrows,decorations.markings,shapes.geometric}
+\newcommand\defeq{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny def}}}{=}}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+%--------Counters--------
+
+
+
+\newcounter{day}
+\DeclareStringOption[\day]{day}[\day]%\setcounter{day}{22}
+\newcounter{month}
+\setcounter{month}{\month}
+
+%--------Theorem Environments--------
+%theoremstyle{plain} --- default
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem*{prop*}{Proposition}
+\newtheorem{ppty}[thm]{Property}
+\newtheorem*{ppty*}{Property}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem*{lem*}{Lemma}
+\newtheorem{conj}[thm]{Conjecture}
+
+\numberwithin{day}{month}
+% \numberwithin{thm}{prob}
+
+\theoremstyle{definition}
+\newcounter{chap}
+\newcounter{subchap}
+\newcounter{extra}
+%\newcounter{aexer}
+\setcounter{chap}{0}
+\newtheorem{prob}{Problem}
+\newtheorem*{prob*}{Problem}
+\newtheorem{exer}[prob]{Exercise}
+\newtheorem{aexer}{Arrondo Exercise}
+\newtheorem{hexer}{Hatcher Exercise}
+\newtheorem{cprob}[prob]{Concise Problem}
+\numberwithin{aexer}{chap}
+\numberwithin{subchap}{chap}
+\numberwithin{hexer}{subchap}
+\numberwithin{thm}{section}
+\newtheorem*{soln}{Solution to Problem \arabic{prob}}
+\newtheorem{sol}[prob]{Solution to Problem}
+\newtheorem*{asoln}{Solution to Arrondo Exercise \arabic{chap}.\arabic{aexer}}
+\newtheorem{hsoln}[hexer]{Solution to Hatcher Exercise\addtocounter{hexer}{-1}}
+\newtheorem*{hsolna}{Solution to Hatcher Exercise \arabic{chap}.A.\arabic{hexer}}
+\newtheorem*{hsolnb}{Solution to Hatcher Exercise \arabic{chap}.B.\arabic{hexer}}
+\newtheorem*{hsolnc}{Solution to Hatcher Exercise \arabic{chap}.C.\arabic{hexer}}
+\newtheorem{csoln}[prob]{Solution to Concise Problem\addtocounter{prob}{-1}}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{defns}[thm]{Definitions}
+\newtheorem{exmp}[thm]{Example}
+\newtheorem{exmps}[thm]{Examples}
+\newtheorem{facts}[thm]{Facts}
+\newtheorem{triv}[thm]{Trivial Examples}
+\newtheorem*{rcl}{Recall}
+\newtheorem{notn}[thm]{Notation}
+\newtheorem*{notn*}{Notation}
+\newtheorem{notns}[thm]{Notations}
+\newtheorem{conv}[thm]{Convention}
+\newtheorem{cons}[thm]{Consequence}
+\newtheorem{addm}[thm]{Addendum}
+\newtheorem{expl}[thm]{Explanation}
+\newtheorem{alg}[thm]{Algorithm}
+\newtheorem{ax}[thm]{Axiom}
+\newtheorem*{exax}{Excision Axiom}
+%\newtheorem*{prob}{Problem}
+%\newtheorem*{soln}{Solution}
+%\newtheorem*{exer}{Exercise}
+\newtheorem*{extra}{Supplementary Problem \stepcounter{extra}\arabic{extra}}
+\newtheorem*{extrasoln}{Solution to Supplementary Problem \arabic{extra}}
+\newtheorem{quest}[thm]{Question}
+\newtheorem{quests}[thm]{Questions}
+
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem*{rem*}{Remark}
+\newtheorem*{aside}{Aside}
+\newtheorem{rems}[thm]{Remarks}
+\newtheorem{clm}[thm]{Claim}
+\newtheorem*{clm*}{Claim}
+\newtheorem{warn}[thm]{Warning}
+\newtheorem{sch}[thm]{Scholium}
+
+\newenvironment{aenum}{\begin{enumerate}[label=\text{(\alph*)}]}{\end{enumerate}}
+\newenvironment{renum}{\begin{enumerate}[label=\text{(\roman*)}]}{\end{enumerate}}
+\newenvironment{penum}{\begin{enumerate}[label=\text{(\arabic*)}]}{\end{enumerate}}
+\newenvironment{cenum}{\begin{enumerate}[label=\protect\circled{\arabic*}]}{\end{enumerate}}
+\newenvironment{namedthm}[1]{
+\theoremstyle{theorem}
+\newtheorem*{minithm}{#1}
+\begin{minithm}}{\end{minithm}}
+
+%\makeatletter
+%\let\c@equation\c@thm
+%\makeatother
+%\numberwithin{equation}{thm}
+\makeatletter
+\newcommand{\subalign}[2][c]{%
+  \if#1c\vcenter\else\vtop\fi{%
+    \Let@ \restore@math@cr \default@tag
+    \baselineskip\fontdimen10 \scriptfont\tw@
+    \advance\baselineskip\fontdimen12 \scriptfont\tw@
+    \lineskip\thr@@\fontdimen8 \scriptfont\thr@@
+    \lineskiplimit\lineskip
+    \ialign{\hfil$\m@th\scriptstyle##$&$\m@th\scriptstyle{}##$\crcr
+      #2\crcr
+    }%
+  }
+}
+
+%widetilde hack
+
+\newcommand{\doublewidetilde}[1]{{%
+  \mathpalette\double@widetilde{#1}%
+}}
+\newcommand{\double@widetilde}[2]{%
+  \sbox\z@{$\m@th#1\widetilde{#2}$}%
+  \ht\z@=.9\ht\z@
+  \widetilde{\box\z@}%
+}
+\makeatother
+
+\def\ra{\ensuremath\rightarrow}
+\def\lra{\ensuremath\longrightarrow}
+\def\Ra{\ensuremath\Rightarrow}
+\def\Lra{\ensuremath\Longrightarrow}
+\def\lmt{\ensuremath\longmapsto}
+\def\mt{\ensuremath\mapsto}
+\def\isom{\ensuremath\overset{\sim}{\lra}}
+\def\C{\ensuremath\mathbb{C}}
+\def\rs{\ensuremath\hat{\mathbb{C}}}
+\def\N{\ensuremath\mathbb{N}}
+\def\Zpos{\ensuremath\mathbb{Z}^{\geq0}}
+\def\Z{\ensuremath\mathbb{Z}}
+\def\Q{\ensuremath\mathbb{Q}}
+\def\R{\ensuremath\mathbb{R}}
+\def\F{\ensuremath\mathbb{F}}
+\def\E{\ensuremath\mathcal{E}}
+\def\Hg{\ensuremath{\mathcal{H}}}
+\def\rf{\ensuremath\rfloor}
+\def\lf{\ensuremath\lfloor}
+\newcommand{\ol}{\ensuremath\overline}
+\def\sm{\ensuremath\smallsetminus}
+% \DeclareMathOperator{\ker}{ker}
+% \def\Ker{\ensuremath\mathrm{Ker}}
+\def\spl{\ensuremath\mathrm{Spl}}
+\def\End{\ensuremath\mathbf{End}}
+\def\Ann{\ensuremath\mathrm{Ann}}
+\def\Sym{\ensuremath\mathrm{Sym}}
+\def\aut{\ensuremath\mathbf{Aut}}
+\def\hom{\ensuremath\mathrm{Hom}}
+\def\lcm{\ensuremath\mathrm{lcm}}
+\DeclareMathOperator{\img}{im}
+\def\id{\ensuremath\mathrm{id}}
+\def\sign{\ensuremath\mathrm{sign}}
+\def\ch{\ensuremath\mathrm{ch}}
+\def\lan{\ensuremath\langle}
+\def\ran{\ensuremath\rangle}
+\def\vp{\ensuremath\varphi}
+\def\ve{\ensuremath\varepsilon}
+\def\norm{\ensuremath\trianglelefteq}
+\def\orb{\ensuremath{\mathrm{Orbit}}}
+\def\cent{\ensuremath{\mathrm{Centralizer}}}
+\def\stab{\ensuremath{\mathrm{Stab}}}
+\def\Fix{\ensuremath{\mathrm{Fix}}}
+\def\char{\ensuremath{\mathrm{Char}}}
+\def\acts{\curvearrowright}
+\def\seq{\ensuremath\subseteq}
+\def\spl{\mathrm{Spl}}
+\def\sse{\subseteq}
+\def\ss{\subset}
+\def\dist{\textnormal{dist}}
+
+\newcommand{\hg}{hypergraph}
+\newcommand{\hgs}{hypergraphs}
+\newcommand{\hgg}{hypergraph }
+\newcommand{\hgss}{hypergraphs }
+\newcommand{\mols}{mutually orthogonal Latin squares}
+\newcommand{\molss}{mutually orthogonal Latin squares }
+\newcommand{\bd}{\mathbf}
+\newcommand{\red}{\textcolor{Red}}
+\newcommand{\blue}{\textcolor{Blue}}
+\newcommand{\green}{\textcolor[rgb]{0,0.8,0}}
+\newcommand{\A}{\mathbb{A}}
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\G}{\mathbb{G}}
+
+\newcommand{\lft}{\left}
+\newcommand{\rg}{\right}
+\newcommand{\mb}{\mathbf}
+\newcommand{\pf}{proof}
+\newcommand{\mcal}{\mathcal}
+\newcommand{\mscr}{\mathscr}
+\renewcommand{\emptyset}{\varnothing}
+\newcommand{\rad}{\,\mathrm{rad}}
+\newcommand*{\longhookrightarrow}{\ensuremath{\lhook\joinrel\relbar\joinrel\rightarrow}}
+
+
+\DeclareMathOperator\ext{\mathrm{Ext}}
+\DeclareMathOperator\tor{\mathrm{Tor}}
+\DeclareMathOperator\gal{Gal}
+\DeclareMathOperator\vol{vol}
+
+
+%\renewcommand{\qed}{$\hfill\heartsuit$}
+
+% BEGIN COMMATH PACKAGE
+
+%%% Here start the definitions
+\newcommand{\dif}{\mathop{}\!\mathrm{d}}
+\newcommand{\Dif}{\mathop{}\!\mathrm{D}}
+
+\makeatletter
+\newcommand{\spx}[1]{%
+  \if\relax\detokenize{#1}\relax
+    \expandafter\@gobble
+  \else
+    \expandafter\@firstofone
+  \fi
+  {^{#1}}%
+}
+\makeatother
+
+\newcommand\pd[3][]{\frac{\partial\spx{#1}#2}{\partial#3\spx{#1}}}
+\newcommand\tpd[3][]{\tfrac{\partial\spx{#1}#2}{\partial#3\spx{#1}}}
+\newcommand\dpd[3][]{\dfrac{\partial\spx{#1}#2}{\partial#3\spx{#1}}}
+
+\newcommand{\md}[6]{\frac{\partial\spx{#2}#1}{\partial#3\spx{#4}\partial#5\spx{#6}}}
+\newcommand{\tmd}[6]{\tfrac{\partial\spx{#2}#1}{\partial#3\spx{#4}\partial#5\spx{#6}}}
+\newcommand{\dmd}[6]{\dfrac{\partial\spx{#2}#1}{\partial#3\spx{#4}\partial#5\spx{#6}}}
+
+\newcommand{\od}[3][]{\frac{\dif\spx{#1}#2}{\dif#3\spx{#1}}}
+\newcommand{\tod}[3][]{\tfrac{\dif\spx{#1}#2}{\dif#3\spx{#1}}}
+\newcommand{\dod}[3][]{\dfrac{\dif\spx{#1}#2}{\dif#3\spx{#1}}}
+
+\newcommand{\genericdel}[4]{%
+  \ifcase#3\relax
+  \ifx#1.\else#1\fi#4\ifx#2.\else#2\fi\or
+  \bigl#1#4\bigr#2\or
+  \Bigl#1#4\Bigr#2\or
+  \biggl#1#4\biggr#2\or
+  \Biggl#1#4\Biggr#2\else
+  \left#1#4\right#2\fi
+}
+\newcommand{\del}[2][-1]{\genericdel(){#1}{#2}}
+\newcommand{\set}[2][-1]{\genericdel\{\}{#1}{#2}}
+\let\cbr\set
+\newcommand{\sbr}[2][-1]{\genericdel[]{#1}{#2}}
+\newcommand{\abr}[2][-1]{\genericdel<>{#1}{#2}}
+\let\intoo\del
+\let\intcc\sbr
+\newcommand{\intoc}[2][-1]{\genericdel(]{#1}{#2}}
+\newcommand{\intco}[2][-1]{\genericdel[){#1}{#2}}
+\newcommand{\eval}[2][-1]{\genericdel.|{#1}{#2}}
+\newcommand{\envert}[2][-1]{\genericdel||{#1}{#2}}
+\let\abs\envert
+\newcommand{\sVert}[1][0]{%
+  \ifcase#1\relax
+  \rvert\or\bigr|\or\Bigr|\or\biggr|\or\Biggr
+  \fi
+}
+\newcommand{\enVert}[2][-1]{\genericdel\|\|{#1}{#2}}
+\let\norm\enVert
+\newcommand{\fullfunction}[5]{%
+  \begin{array}{@{}r@{}r@{}c@{}l@{}}
+  #1 \colon & #2 & {}\longrightarrow{} & #3 \\
+            & #4 & {}\longmapsto{}     & #5
+  \end{array}
+}
+%%% end of the definitions
+
+% END COMMATH PACKAGE
+
+
+\let\latexchi\chi
+
+\makeatletter
+% \DeclareRobustCommand{\em}{%
+%   \@nomath\em \if b\expandafter\@car\f@series\@nil
+%   \normalfont \else \bfseries \fi}
+
+  %\let\c@equation\c@thm
+  \renewcommand\chi{\@ifnextchar_\sub@chi\latexchi}
+  \newcommand{\sub@chi}[2]{% #1 is _, #2 is the subscript
+    \@ifnextchar^{\subsup@chi{#2}}{\latexchi^{}_{#2}}%
+  }
+  \newcommand{\subsup@chi}[3]{% #1 is the subscript, #2 is ^, #3 is the superscript
+    \latexchi_{#1}^{#3}%
+  }
+\makeatother
+
+% Finally, we'll use \endinput to indicate that LaTeX can stop reading this file. LaTeX will ignore anything after this line.
+\endinput
