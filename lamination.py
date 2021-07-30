@@ -8,7 +8,9 @@ from matplotlib import cm
 from matplotlib.lines import Line2D
 
 class Lamination:
-    def __init__(self, period=1):
+    def __init__(self, period=1, degree=2):
+        self.degree = degree
+
         self.max_period = 1
         self.size = 1
 
@@ -23,7 +25,7 @@ class Lamination:
     # Add in arcs of next period
     def extend(self):
         self.max_period = p = self.max_period + 1
-        n = 2**p - 1
+        n = self.degree**p - 1
 
         counters = [0] * n
 
@@ -84,8 +86,12 @@ class Lamination:
         j = self.period_cutoffs[max_per]
         return [b-a for _,a,b in self.arcs[:j]]
 
+    def arc_lengths_cumulative_set(self, max_per=-1):
+        j = self.period_cutoffs[max_per]
+        return {b-a for _,a,b in self.arcs[:j]}
+
     def draw(self, max_period = None):
-        if max_period is None:
+        if max_period is None or max_period >= self.max_period:
             max_period = self.max_period
 
         fig, ax = plt.subplots()
@@ -122,7 +128,7 @@ class Lamination:
 
         cmap = cm.get_cmap("Set1", max_period)
 
-        for p in reversed(range(1, max_period+1)):
+        for p in reversed(range(1, max_period)):
             i = self.period_cutoffs[p]
             j = self.period_cutoffs[p+1]
             color = cmap((p-1)/max_period)
@@ -131,6 +137,14 @@ class Lamination:
                 draw_arc(a,b,
                         color=color,
                         lw = max_period / (2*p+3))
+        p = max_period
+        i = self.period_cutoffs[p]
+        color = cmap((p-1)/max_period)
+        
+        for _,a,b in self.arcs[i:]:
+            draw_arc(a,b,
+                    color=color,
+                    lw = max_period / (2*p+3))
 
         legend_icons = [
                 Line2D([0], [0], color=cmap((p-2)/max_period), lw=4)
@@ -146,11 +160,11 @@ class Lamination:
         plt.show()
         
 if __name__ == '__main__':
-    lam = Lamination(9)
+    lam = Lamination(14)
 
-    # arc_length_first_digits = [x//10**int(log10(x)-1)
-    #         for x in lam.arc_lengths_cumulative() if x != 0]
-    # plt.hist(arc_length_first_digits, bins=10)
-    # plt.show()
+    arc_length_first_digits = [x//10**int(log10(x)-1)
+            for x in lam.arc_lengths_cumulative_set() if x != 0]
+    plt.hist(arc_length_first_digits, bins=9)
+    plt.show()
 
-    lam.draw(7)
+    lam.draw(9)
