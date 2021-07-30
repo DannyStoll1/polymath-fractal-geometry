@@ -1,115 +1,103 @@
+#! /usr/bin/env python
+
 import random
 import math
+from math import log2
 import os
 import ctypes
 import array
+from functools import reduce
+from operator import mul
+from fractions import Fraction
 random.seed()
 
 #generalized binomial coefficients
-def C(a,b):
+def binomial_coefficient(a,b):
     if(b==0|b==a):
-        return 1
+        return Fraction(1)
     elif(b==1):
-        return a
+        return Fraction(a)
     elif(b<0):
         return 0;
     else:
-        product = 1;
-        for i in range(b):
-            product*=(a-i)
-        product/=math.factorial(b)
-        return product
+        return product((a-i)/(i+1) for i in range(b))
 
 #first digit of a number 
 def ndigit(num, n):
-    if(num == 0):
+    if num == 0 :
         return 0
+    elif num < 0:
+        num *= -1
     while((num<1) & (num>0)):
         num*=10
     return num // 10 ** (int(math.log(num, 10)) - n + 1)
 
-#digits = [0 for i in range(0,10)]
+
+# Generate the multi indices
+def gen_multi_indices(m, n, coord=0):
+    if coord == n-1:
+        yield [m]
+        return
+
+    period = (1<<(n-coord)) - 1
+    for i in range(m//period+1):
+        for item in gen_multi_indices(
+                m - i*period,
+                n,
+                coord=coord+1
+                ):
+            yield [i] + item
+
+def product(arr):
+    return reduce(mul, arr, 1)
 
 
-#Linear Diophantine Equation Generator
-def DioEquGen(d,m,n):
-    #for i in range(n-1,0,-1):
-        #if(i == 1):
-            #print(d**(i)-1,'j',i, end = ' ')
-        #else:
-            #print(d**(i)-1,'j',i,'+', end = ' ')
-    #print('=', m-1)
+class MandelbrotLaurentSeries:
+    def __init__(self, degree=2):
+        self.d = degree
+        self.n = 0
+        self.coefficients = [Fraction(0), Fraction(0)]
 
-    #generate the diophantine equations and store coefficients in an array
-    j = [d**(i)-1 for i in range(n,0,-1)]
-    #print(j)
-    return j
-    #next = [d**(n)-1]
-    #print(next)
-    #j = next + j
-    #print(j)
+    # Increment n, generating the next d^n power series coefficients.
+    def update(self):
+        self.n += 1
+        self.coefficients += [0] * self.d**self.n
+        if self.n >= 4:
+            lower = self.d**self.n
+            upper = self.d*lower
+            print(f"Updating max degree from {lower} to {upper}. "
+                  f"This may take a while...")
+            for m in range(self.d**(self.n), self.d**(self.n+1)):
+                print(f"Calculated {m} of {upper} coefficients.")
+                self.coefficients[m] = self.calculate_coefficient(m, self.n, self.d)
+        else:
+            for m in range(self.d**(self.n), self.d**(self.n+1)):
+                self.coefficients[m] = self.calculate_coefficient(m, self.n, self.d)
 
-#range of j_i for iteration
-def DioEquRange(d,m,n):
-    j = DioEquGen(d,m,n)
-    maxIter = [0 for i in range(n)]
-    for i in range(n):
-        while((maxIter[i]+1)*j[i] <= m-1):
-            maxIter[i]+=1
-    #print(maxIter)
-    return maxIter
-    
+    @staticmethod
+    def calculate_coefficient(m, n, d=2):
+        coeff = sum(
+            product(
+                binomial_coefficient(Fraction(m, d**(n-i)) - sum(
+                    d**(i-j) * idx[j] for j in range(i)
+                    ), idx[i])
+                for i in range(n)
+                )
+            for idx in gen_multi_indices(m-1,n)
+            )
 
-
-#logic to check if a given sequence is a solution
-def SolnCheck(d,m,n,sequence):
-    val = 0
-    j = DioEquGen(d,m,n)
-    for i in range(n):
-        val += j[i]*sequence[i]
-    success = (val == m-1)
-    #print(sequence)
-    #print(success)
-    if(success):
-        print(sequence, 'is a solution')
-    return success
+        return coeff/m
 
 
-#iterating through n=3 case for practice, can generate the first 15 terms
-def DioEquIter(d,m,n):
-    j = DioEquGen(d,m,n)
-    print('j =', j)
-    soln=[]
-    maxIter = DioEquRange(d,m,n)
-    print('max', maxIter)
-    print('m-1 =',m-1)
-    iteration = [0 for i in range(n)]
-    for z in range(maxIter[0]+1):
-        for i in range(maxIter[1]+1):
-            for k in range(maxIter[2]+1):
-                #SolnCheck(d,m,n,iteration)
-                if(SolnCheck(d,m,n,iteration)):
-                    soln+=iteration
-                iteration[2]+=1
-            iteration[1]+=1
-            iteration[2]=0
-        iteration[0]+=1
-        iteration[1]=0
-        iteration[2]=0
-    print(soln)
-    print('length=', len(soln))
-    print(' ')
-    return soln
+if __name__ == '__main__':
+    deg = 2
+    ser = MandelbrotLaurentSeries(deg)
+    for _ in range(7):
+        ser.update()
 
-#formula to compute coefficients, works up to n=3, n=15
-def Laurent(d,m,n):
-    coeff = 0
-    soln = DioEquIter(d,m,n)
-    for i in range(0,len(soln)-n+1,n):
-        coeff+= C((m/d**n),soln[i])*C((m/d**(n-1))-d*soln[i],soln[i+1])*C((m/d**(n-2))-(d**2)*soln[i]-d*soln[i+1],soln[i+2])
-    coeff/=m
-    print('coeff',m,'=', coeff)
-    print(' ')
-
-for z in range(2,16):
-    Laurent(2,z,3)
+    max_coeff = len(ser.coefficients)-1
+    with open(f'laurent_coeffs_{deg}_{max_coeff}.csv', 'w+') as f:
+        f.write("degree, numerator, denominator exponent\n")
+        for m, coef in enumerate(ser.coefficients):
+            a,b = coef.as_integer_ratio()
+            f.write(f"{m}, {a}, {b.bit_length()-1}\n")
