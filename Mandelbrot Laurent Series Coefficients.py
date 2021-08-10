@@ -34,17 +34,18 @@ def ndigit(num, n):
 
 
 # Generate the multi indices
-def gen_multi_indices(m, n, coord=0):
+def gen_multi_indices(m, n, coord=0, deg=2):
     if coord == n-1:
         yield [m]
         return
 
-    period = (1<<(n-coord)) - 1
+    period = deg**(n-coord) - 1
     for i in range(m//period+1):
         for item in gen_multi_indices(
                 m - i*period,
                 n,
-                coord=coord+1
+                coord=coord+1,
+                deg=deg
                 ):
             yield [i] + item
 
@@ -56,12 +57,12 @@ class MandelbrotLaurentSeries:
     def __init__(self, degree=2):
         self.d = degree
         self.n = 0
-        self.coefficients = [Fraction(0), Fraction(0)]
+        self.coefficients = [Fraction(0)]*degree
 
     # Increment n, generating the next d^n power series coefficients.
     def update(self):
         self.n += 1
-        self.coefficients += [0] * self.d**self.n
+        self.coefficients += [0] * (self.d**(self.n+1) - self.d**self.n)
         if self.n >= 4:
             lower = self.d**self.n
             upper = self.d*lower
@@ -77,12 +78,13 @@ class MandelbrotLaurentSeries:
     @staticmethod
     def calculate_coefficient(m, n, d=2):
         coeff = sum(
-            product(
-                binomial_coefficient(Fraction(m, d**(n-i)) - sum(
-                    d**(i-j) * idx[j] for j in range(i)
-                    ), idx[i])
-                for i in range(n)
-                )
+            0
+            # product(
+            #     binomial_coefficient(Fraction(m, d**(n-i)) - sum(
+            #         d**(i-j) * idx[j] for j in range(i)
+            #         ), idx[i])
+            #     for i in range(n)
+            #     )
             for idx in gen_multi_indices(m-1,n)
             )
 
@@ -92,7 +94,7 @@ class MandelbrotLaurentSeries:
 if __name__ == '__main__':
     deg = 2
     ser = MandelbrotLaurentSeries(deg)
-    for _ in range(7):
+    for _ in range(9):
         ser.update()
 
     max_coeff = len(ser.coefficients)-1
@@ -101,3 +103,5 @@ if __name__ == '__main__':
         for m, coef in enumerate(ser.coefficients):
             a,b = coef.as_integer_ratio()
             f.write(f"{m}, {a}, {b.bit_length()-1}\n")
+
+    # print(ser.calculate_coefficient(512, 9))
