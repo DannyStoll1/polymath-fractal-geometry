@@ -81,7 +81,7 @@ class MandelbrotLaurentSeries:
             if m > 1000 and m % 1024 == 0:
                 with open(f"bm_coeffs_{m}_interm.csv", 'w+') as f:
                     f.write("index, Numerator, Denominator\n")
-                    for i in range(m):
+                    for i in range(1, m):
                         bi = ser.b_coeffs[i]
                         f.write(f"{i}, {bi.numerator}, {bi.denominator}\n")
         sys.stdout.write("\r")
@@ -96,7 +96,7 @@ class MandelbrotLaurentSeries:
             if m > 1000 and m % 1024 == 0:
                 with open(f"am_coeffs_{m}_interm.csv", 'w+') as f:
                     f.write("index, Numerator, Denominator\n")
-                    for i in range(m):
+                    for i in range(1, m):
                         ai = ser.a_coeffs[i]
                         f.write(f"{i}, {ai.numerator}, {ai.denominator}\n")
 
@@ -131,7 +131,7 @@ if __name__ == '__main__':
     ser.compute_bs(max_power)
     with open(f"bm_coeffs_{max_power}.csv", 'w+') as f:
         f.write("index, Numerator, Denominator\n")
-        for i in range(max_power):
+        for i in range(1, max_power):
             bi = ser.b_coeffs[i]
             f.write(f"{i}, {bi.numerator}, {bi.denominator}\n")
 
@@ -140,7 +140,7 @@ if __name__ == '__main__':
         ser.compute_as(max_power)
         with open(f"am_coeffs_{max_power}.csv", 'w+') as f:
             f.write("index, Numerator, Denominator\n")
-            for i in range(max_power):
+            for i in range(1, max_power):
                 ai = ser.a_coeffs[i]
                 f.write(f"{i}, {ai.numerator}, {ai.denominator}\n")
 
