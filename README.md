@@ -15,3 +15,13 @@ For example, to compute the first 7168 coefficients for both am and bm
 $ python codes/coeff_compute.py --max_power 7168
 ```
 
+Results will be saved in the same folder with names "am_coeffs_7168.csv" and "bm_coeffs_7168.csv." Intermediate results will also be saved for every 1024 coefficients.
+
+
+
+If existing am and/or bm coefficients are computed, we can load coefficients from existing files (say bm_coeffs_1024.csv and am_coeffs_1024.csv)
+
+```
+$ python codes/coeff_compute.py --max_power 7168 --load_bm "bm_coeffs_1024.csv" --load_am "am_coeffs_1024.csv"
+```
+
