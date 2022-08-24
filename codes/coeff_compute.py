@@ -5,6 +5,7 @@
 import sys
 from fractions import Fraction
 import argparse
+import os
 
 # d = 2
 class MandelbrotLaurentSeries:
@@ -108,9 +109,19 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--max_power', type=int, default=7168, help='maximum number of coefficients to compute')
+    parser.add_argument('--load_bm', type=str, default=None, help='load b coefficients from file')
+    parser.add_argument('--load_am', type=str, default=None, help='load a coefficients from file')
     args = parser.parse_args()
     print("Total number of coefficients to compute:", args.max_power)
     max_power = args.max_power # Set the maximum number of coefficients to compute
+    
+    if args.load_bm is not None:
+        assert(os.path.exists(args.load_bm))
+        ser.open_b(args.load_bm)
+    if args.load_am is not None:
+        assert(os.path.exists(args.load_am))
+        ser.open_a(args.load_am)
+    
     
     compute_a = True
 
