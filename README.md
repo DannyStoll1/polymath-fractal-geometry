@@ -24,6 +24,5 @@ If existing am and/or bm coefficients are computed, we can load coefficients fro
 ```
 $ python codes/coeff_compute.py --max_power 7168 --load_bm "bm_coeffs_1024.csv" --load_am "am_coeffs_1024.csv"
 
-Note that the 0th row is a placeholder for names, specifically the data is stored in the format (index+1,Numerator,Denominator)
 ```
 
