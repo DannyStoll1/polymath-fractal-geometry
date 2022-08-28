@@ -44,8 +44,9 @@ There are also equivalent chi-square test statistics for cross-checking.
 For example, to compute the power of a test with 0.05 significance level with degree of freedom equals 8, we can use the 
 following R command (lambda should be substituted with the value automatically computed on the Excel sheet).
 
-'''
-1 - qchisq(.95, 8), 8, lambda)
-'''
+```
+$ 1 - qchisq(.95, 8), 8, lambda)
+
+```
 
 To conduct simulations to see sampling error, use **Data Analysis/sampling_simulation.ipynb**
